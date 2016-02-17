@@ -7,19 +7,39 @@
 //
 
 import UIKit
+import TwitterKit
+import Twitter
 
-class ViewController: UIViewController {
+class ViewController: UIViewController
+{
+    @IBOutlet weak var userNameLabel: UILabel!
 
-    override func viewDidLoad() {
+    override func viewDidLoad()
+    {
         super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
+        
+        let logInButton = TWTRLogInButton(logInCompletion:
+        { session, error in
+            if (session != nil)
+            {
+                print("signed in as \(session!.userName)");
+                self.userNameLabel.text = session!.userName
+                self.performSegueWithIdentifier("showTweets", sender: nil)
+            }
+        })
+        logInButton.center = self.view.center
+        self.view.addSubview(logInButton)
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        
+        var destination = segue.destinationViewController
+        if let navCon = destination as? UINavigationController {
+            destination = navCon.visibleViewController!
+        }
+        if let tvc = destination as? UserTimelineViewController {
+            tvc.userName = self.userNameLabel.text!
+        }
     }
-
-
 }
-
